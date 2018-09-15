@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
+    public static final String MOVIE_OBJ_INTENT_KEY = "MovieDataObj";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,7 +19,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (intentExtra == null) {
             return;
         }
-        MovieData currentMovieData = (MovieData) intentExtra.getParcelable("MovieDataObj");
+        MovieData currentMovieData = (MovieData) intentExtra.getParcelable(MOVIE_OBJ_INTENT_KEY);
 
         String movieTitle = currentMovieData.getMovieTitle();
         if (!TextUtils.isEmpty(movieTitle))

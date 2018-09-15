@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     @Override
     public void mClick(MovieData movieData) {
         Intent intent = new Intent(this, MovieDetailsActivity.class);
-        intent.putExtra("MovieDataObj", movieData);
+        intent.putExtra(MovieDetailsActivity.MOVIE_OBJ_INTENT_KEY, movieData);
         startActivity(intent);
     }
 
