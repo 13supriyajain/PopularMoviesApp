@@ -10,4 +10,12 @@
     <string name="sort_by_top_rated_menu">SortBy: Top Rated</string>
     <string name="movie_details_label">Movie Details</string>
     <string name="movie_poster_content_description">Movie Poster</string>
+    <string name="dummy_video_label">Trailer Video</string>
+    <string name="dummy_reviewer_name_text">Author Name</string>
+    <string name="dummy_review_text">Review text goes here</string>
+
+    <string name="summary_title">Plot Synopsis</string>
+    <string name="trailers_title">Trailers</string>
+    <string name="reviews_title">Reviews</string>
+
 </resources>

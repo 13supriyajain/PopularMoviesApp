@@ -1,6 +1,8 @@
 package com.example.supjain.popularmoviesapp;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -19,7 +21,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (intentExtra == null) {
             return;
         }
-        MovieData currentMovieData = (MovieData) intentExtra.getParcelable(MOVIE_OBJ_INTENT_KEY);
+        MovieData currentMovieData = intentExtra.getParcelable(MOVIE_OBJ_INTENT_KEY);
 
         String movieTitle = currentMovieData.getMovieTitle();
         if (!TextUtils.isEmpty(movieTitle))
@@ -45,9 +47,20 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(voteCount))
             voteCountTextView.setText(voteCount);
 
-        TextView movieOverviewTextView = findViewById(R.id.movie_overview_tv);
-        String overview = currentMovieData.getMovieOverview();
-        if (!TextUtils.isEmpty(overview))
-            movieOverviewTextView.setText(overview);
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = findViewById(R.id.viewpager);
+
+        // Create an adapter that knows which fragment should be shown on each page
+        SimpleFragmentPagerAdapter adapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager(), currentMovieData);
+
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(adapter);
+
+        // Connect the tab layout with the view pager. This will
+        //   1. Update the tab layout when the view pager is swiped
+        //   2. Update the view pager when a tab is selected
+        //   3. Set the tab layout's tab names with the view pager's adapter's titles by calling onPageTitle()
+        TabLayout tabLayout = findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
     }
 }

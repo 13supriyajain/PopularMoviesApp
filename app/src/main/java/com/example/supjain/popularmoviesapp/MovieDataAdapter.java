@@ -34,8 +34,8 @@ public class MovieDataAdapter extends RecyclerView.Adapter<MovieDataAdapter.Movi
 
     @Override
     public void onBindViewHolder(@NonNull MovieDataAdapterViewHolder holder, int position) {
-        int clickedPosition = holder.getAdapterPosition();
-        String imageUrl = mMovieDataList.get(clickedPosition).getMoviePosterUrl();
+        int viewPosition = holder.getAdapterPosition();
+        String imageUrl = mMovieDataList.get(viewPosition).getMoviePosterUrl();
         MovieDataUtil.loadImageView(context, holder.mMoviePosterImageView, imageUrl);
     }
 

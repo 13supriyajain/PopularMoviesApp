@@ -19,6 +19,8 @@ public class MovieData implements Parcelable {
             return new MovieData[size];
         }
     };
+
+    private String mMovieId;
     private String mMovieTitle;
     private String mMoviePosterUrl;
     private String mMovieReleaseDate;
@@ -27,7 +29,8 @@ public class MovieData implements Parcelable {
     private String mMovieOverview;
 
     // Parametrized constructor to create object with specific movie information
-    public MovieData(String title, String url, String date, String rating, String voteCount, String overview) {
+    public MovieData(String id, String title, String url, String date, String rating, String voteCount, String overview) {
+        this.mMovieId = id;
         this.mMovieTitle = title;
         this.mMoviePosterUrl = url;
         this.mMovieReleaseDate = date;
@@ -37,6 +40,7 @@ public class MovieData implements Parcelable {
     }
 
     protected MovieData(Parcel in) {
+        mMovieId = in.readString();
         mMovieTitle = in.readString();
         mMoviePosterUrl = in.readString();
         mMovieReleaseDate = in.readString();
@@ -52,12 +56,17 @@ public class MovieData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mMovieId);
         dest.writeString(mMovieTitle);
         dest.writeString(mMoviePosterUrl);
         dest.writeString(mMovieReleaseDate);
         dest.writeString(mMovieRating);
         dest.writeString(mMovieVoteCount);
         dest.writeString(mMovieOverview);
+    }
+
+    public String getMovieId() {
+        return mMovieId;
     }
 
     public String getMovieTitle() {

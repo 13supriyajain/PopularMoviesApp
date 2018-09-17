@@ -39,6 +39,9 @@ public class MovieDataUtil {
     private static final String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY_VALUE;
     private static final String API_KEY_QUAERY_PARAM = API_KEY_KEYWORD + API_KEY_VALUE;
 
+    private static final String VIDEOS_QUERY = "/videos";
+    private static final String REVIEWS_QUERY = "/reviews";
+
     /**
      * Query the movie DBt and return a list of {@link MovieData} objects.
      */
@@ -94,6 +97,9 @@ public class MovieDataUtil {
                 // Get a single movie data object at position i within the list of movie data objects
                 JSONObject currentMovieData = movieDataArray.getJSONObject(i);
 
+                // Extract the value for the key called "id"
+                String id = currentMovieData.getString("id");
+
                 // Extract the value for the key called "original_title"
                 String title = currentMovieData.getString("original_title");
 
@@ -113,7 +119,7 @@ public class MovieDataUtil {
                 String overview = currentMovieData.getString("overview");
 
                 // Create a new {@link MovieData} object with the values extracted above
-                MovieData movieData = new MovieData(title, url, date, rating, vote_count, overview);
+                MovieData movieData = new MovieData(id, title, url, date, rating, vote_count, overview);
 
                 // Add the new {@link MovieData} to the movieDataList.
                 movieDataList.add(movieData);
