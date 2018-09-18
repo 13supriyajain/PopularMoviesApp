@@ -10,14 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * This custom Fragment class is for displaying the list of movie videos/trailers.
  */
 
 public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.MovieVideosAdapterOnClickHandler {
+
+    private RecyclerView videosListView;
 
     public MovieVideosFragment() {
         // Required empty public constructor
@@ -27,27 +33,42 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.data_recycler_view, container, false);
-
+        videosListView = rootView.findViewById(R.id.list);
         String movieId = getArguments().getString(SimpleFragmentPagerAdapter.MOVIE_ID);
-        // make rest api call to get list of videos for the movie
-        List<MovieVideosData> mMovieVideosDataList = new ArrayList<>();
-        mMovieVideosDataList.add(new MovieVideosData("Z5ezsReZcxU", "No Good Deed"));
-        mMovieVideosDataList.add(new MovieVideosData("2-5Wv9UGkN8", "Deadpool 2 | Official HD  Deadpool's \\\"Wet on Wet\\\" Teaser | 2018"));
-
-        MovieVideosAdapter movieVideosAdapter = new MovieVideosAdapter(this);
-        movieVideosAdapter.setMovieVideosData(mMovieVideosDataList);
-
-        RecyclerView videosListView = rootView.findViewById(R.id.list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        videosListView.setLayoutManager(linearLayoutManager);
-        videosListView.setAdapter(movieVideosAdapter);
-        videosListView.setHasFixedSize(true);
-
+        fetchAndSetVideoList(movieId);
         return rootView;
     }
 
     @Override
     public void mClick(String movieVideoUrl) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(movieVideoUrl)));
+    }
+
+    private void fetchAndSetVideoList(String movieId) {
+        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
+        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+
+        Call<MovieVideosData.TrailersApiResponse> call = service.getMovieVideos(movieId, ApiKeyValue);
+        call.enqueue(new Callback<MovieVideosData.TrailersApiResponse>() {
+            @Override
+            public void onResponse(Call<MovieVideosData.TrailersApiResponse> call, Response<MovieVideosData.TrailersApiResponse> response) {
+                setVideosList(response.body().getMovieVideosDataList());
+            }
+
+            @Override
+            public void onFailure(Call<MovieVideosData.TrailersApiResponse> call, Throwable t) {
+            }
+        });
+    }
+
+    private void setVideosList(List<MovieVideosData> mMovieVideosDataList) {
+        MovieVideosAdapter movieVideosAdapter = new MovieVideosAdapter(this);
+        movieVideosAdapter.setMovieVideosData(mMovieVideosDataList);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        videosListView.setLayoutManager(linearLayoutManager);
+        videosListView.setAdapter(movieVideosAdapter);
+        videosListView.setHasFixedSize(true);
     }
 }

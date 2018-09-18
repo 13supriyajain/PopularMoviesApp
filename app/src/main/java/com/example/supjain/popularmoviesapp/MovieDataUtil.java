@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -18,15 +19,17 @@ import retrofit2.http.Query;
 public class MovieDataUtil {
 
     private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/";
+    private static final String DOMAIN_URL = "https://api.themoviedb.org/3/movie/";
+    private static final String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY_VALUE;
     private static final String VIDEOS_QUERY = "/videos";
     private static final String REVIEWS_QUERY = "/reviews";
 
     private static Retrofit retrofitInstance;
 
-    public static Retrofit getRetrofitInstance(String url) {
+    public static Retrofit getRetrofitInstance() {
         if (retrofitInstance == null) {
             retrofitInstance = new retrofit2.Retrofit.Builder()
-                    .baseUrl(url)
+                    .baseUrl(DOMAIN_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
@@ -45,11 +48,21 @@ public class MovieDataUtil {
         return noOfColumns;
     }
 
+    public static String getApiKeyValue() {
+        return API_KEY_VALUE;
+    }
+
     public interface MovieDataFetchService {
         @GET("popular")
         Call<MovieData.MovieApiResponse> getPopularMovies(@Query("api_key") String apiKey);
 
         @GET("top_rated")
         Call<MovieData.MovieApiResponse> getTopRatedMovies(@Query("api_key") String apiKey);
+
+        @GET("{movie_id}/videos")
+        Call<MovieVideosData.TrailersApiResponse> getMovieVideos(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
+
+        @GET("{movie_id}/reviews")
+        Call<MovieReviewsData.ReviewsApiResponse> getMovieReviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
     }
 }

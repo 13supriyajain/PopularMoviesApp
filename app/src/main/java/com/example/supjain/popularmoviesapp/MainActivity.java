@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
 
     private static final int POPULAR_MOVIE_TYPE = 1;
     private static final int TOP_RATED_MOVIE_TYPE = 2;
-    private static final String DOMAIN_URL = "https://api.themoviedb.org/3/movie/";
-    private static final String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY_VALUE;
 
     private RecyclerView mRecyclerView;
     private MovieDataAdapter mMovieDataAdapter;
@@ -116,14 +114,15 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     }
 
     private void fetchMovieListFromServer(int requestType) {
-        Retrofit retrofit = MovieDataUtil.getRetrofitInstance(DOMAIN_URL);
+        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
         MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
         Call<MovieData.MovieApiResponse> call;
 
         if (requestType == POPULAR_MOVIE_TYPE)
-            call = service.getPopularMovies(API_KEY_VALUE);
+            call = service.getPopularMovies(ApiKeyValue);
         else
-            call = service.getTopRatedMovies(API_KEY_VALUE);
+            call = service.getTopRatedMovies(ApiKeyValue);
 
         mProgressbar.setVisibility(View.VISIBLE);
 

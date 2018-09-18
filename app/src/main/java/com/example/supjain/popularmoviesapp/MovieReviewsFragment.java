@@ -10,14 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * This custom Fragment class is for displaying the list of movie reviews.
  */
 
 public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapter.MovieReviewsAdapterOnClickHandler {
+
+    private RecyclerView reviewsListView;
 
     public MovieReviewsFragment() {
         // Required empty public constructor
@@ -27,23 +33,11 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.data_recycler_view, container, false);
+        reviewsListView = rootView.findViewById(R.id.list);
 
         String movieId = getArguments().getString(SimpleFragmentPagerAdapter.MOVIE_ID);
         // make rest api call to get list of videos for the movie
-        List<MovieReviewsData> mMovieReviewsDataList = new ArrayList<>();
-        mMovieReviewsDataList.add(new MovieReviewsData("garethmb", "The Mercenary with a mouth is back with the eagerly awaited arrival of Deadpool.",
-                "https://www.themoviedb.org/review/5afa5a93925141414b005cf0"));
-        mMovieReviewsDataList.add(new MovieReviewsData("TobyBenson", "An utterly hilarious movie, with hundreds of pop culture references",
-                "https://www.themoviedb.org/review/5b15d58fc3a368534f00fde5"));
-
-        MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
-        movieReviewsAdapter.setMovieReviewsData(mMovieReviewsDataList);
-
-        RecyclerView reviewsListView = rootView.findViewById(R.id.list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        reviewsListView.setLayoutManager(linearLayoutManager);
-        reviewsListView.setAdapter(movieReviewsAdapter);
-        reviewsListView.setHasFixedSize(true);
+        fetchAndSetReviewList(movieId);
 
         return rootView;
     }
@@ -51,5 +45,33 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
     @Override
     public void mClick(String movieReviewUrl) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(movieReviewUrl)));
+    }
+
+    private void fetchAndSetReviewList(String movieId) {
+        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
+        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+
+        Call<MovieReviewsData.ReviewsApiResponse> call = service.getMovieReviews(movieId, ApiKeyValue);
+        call.enqueue(new Callback<MovieReviewsData.ReviewsApiResponse>() {
+            @Override
+            public void onResponse(Call<MovieReviewsData.ReviewsApiResponse> call, Response<MovieReviewsData.ReviewsApiResponse> response) {
+                setReviewList(response.body().getMovieReviewsDataList());
+            }
+
+            @Override
+            public void onFailure(Call<MovieReviewsData.ReviewsApiResponse> call, Throwable t) {
+            }
+        });
+    }
+
+    private void setReviewList(List<MovieReviewsData> mMovieReviewsDataList) {
+        MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
+        movieReviewsAdapter.setMovieReviewsData(mMovieReviewsDataList);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        reviewsListView.setLayoutManager(linearLayoutManager);
+        reviewsListView.setAdapter(movieReviewsAdapter);
+        reviewsListView.setHasFixedSize(true);
     }
 }
