@@ -3,6 +3,11 @@ package com.example.supjain.popularmoviesapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is a custom class for holding information about a Movie.
  */
@@ -20,12 +25,19 @@ public class MovieData implements Parcelable {
         }
     };
 
+    @SerializedName("id")
     private String mMovieId;
+    @SerializedName("original_title")
     private String mMovieTitle;
+    @SerializedName("poster_path")
     private String mMoviePosterUrl;
+    @SerializedName("release_date")
     private String mMovieReleaseDate;
+    @SerializedName("vote_average")
     private String mMovieRating;
+    @SerializedName("vote_count")
     private String mMovieVoteCount;
+    @SerializedName("overview")
     private String mMovieOverview;
 
     // Parametrized constructor to create object with specific movie information
@@ -91,5 +103,20 @@ public class MovieData implements Parcelable {
 
     public String getMovieOverview() {
         return mMovieOverview;
+    }
+
+
+    public class MovieApiResponse {
+
+        @SerializedName("results")
+        List<MovieData> movieDataList;
+
+        public MovieApiResponse() {
+            this.movieDataList = new ArrayList<>();
+        }
+
+        public List<MovieData> getMovieDataList() {
+            return this.movieDataList;
+        }
     }
 }

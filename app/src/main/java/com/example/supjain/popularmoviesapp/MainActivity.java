@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,7 +16,17 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class MainActivity extends AppCompatActivity implements MovieDataAdapter.MovieAdapterOnClickHandler {
+
+    private static final int POPULAR_MOVIE_TYPE = 1;
+    private static final int TOP_RATED_MOVIE_TYPE = 2;
+    private static final String DOMAIN_URL = "https://api.themoviedb.org/3/movie/";
+    private static final String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY_VALUE;
 
     private RecyclerView mRecyclerView;
     private MovieDataAdapter mMovieDataAdapter;
@@ -39,14 +48,19 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
         mRecyclerView.setAdapter(mMovieDataAdapter);
         mRecyclerView.setHasFixedSize(true);
 
-        String requestUrl = MovieDataUtil.getRequestUrl(MovieDataUtil.POPULAR_MOVIE_SEARCH_KEY);
-        loadMovieData(requestUrl);
+        loadMovieData(POPULAR_MOVIE_TYPE);
     }
 
-    private void loadMovieData(String requestUrl) {
+    private void loadMovieData(int requestType) {
         if (hasNetworkConnection()) {
-            showMovieData();
-            new FetchMovieDataTask().execute(requestUrl);
+            switch (requestType) {
+                case POPULAR_MOVIE_TYPE:
+                    fetchMovieListFromServer(POPULAR_MOVIE_TYPE);
+                    break;
+                case TOP_RATED_MOVIE_TYPE:
+                    fetchMovieListFromServer(TOP_RATED_MOVIE_TYPE);
+                    break;
+            }
         } else {
             showErrorMessage();
         }
@@ -62,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     private void showMovieData() {
         mNetworkErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
     }
 
     private void showErrorMessage() {
         mNetworkErrorMessageDisplay.setVisibility(View.VISIBLE);
-        mProgressbar.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -86,50 +101,50 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        String url = "";
 
         switch (id) {
             case R.id.sort_by_popular_option:
-                url = MovieDataUtil.getRequestUrl(MovieDataUtil.POPULAR_MOVIE_SEARCH_KEY);
+                mMovieDataAdapter.setMovieData(null);
+                loadMovieData(POPULAR_MOVIE_TYPE);
                 break;
             case R.id.sort_by_rating_option:
-                url = MovieDataUtil.getRequestUrl(MovieDataUtil.TOP_RATED_MOVIE_SEARCH_KEY);
+                mMovieDataAdapter.setMovieData(null);
+                loadMovieData(TOP_RATED_MOVIE_TYPE);
                 break;
         }
-
-        mMovieDataAdapter.setMovieData(null);
-        loadMovieData(url);
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchMovieDataTask extends AsyncTask<String, Void, List<MovieData>> {
+    private void fetchMovieListFromServer(int requestType) {
+        Retrofit retrofit = MovieDataUtil.getRetrofitInstance(DOMAIN_URL);
+        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+        Call<MovieData.MovieApiResponse> call;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressbar.setVisibility(View.VISIBLE);
-        }
+        if (requestType == POPULAR_MOVIE_TYPE)
+            call = service.getPopularMovies(API_KEY_VALUE);
+        else
+            call = service.getTopRatedMovies(API_KEY_VALUE);
 
-        @Override
-        protected List<MovieData> doInBackground(String... params) {
-            List<MovieData> movieDataList = null;
+        mProgressbar.setVisibility(View.VISIBLE);
 
-            if (params.length != 0) {
-                String url = params[0];
-                movieDataList = MovieDataUtil.fetchMovieData(url);
+        call.enqueue(new Callback<MovieData.MovieApiResponse>() {
+            @Override
+            public void onResponse(Call<MovieData.MovieApiResponse> call, Response<MovieData.MovieApiResponse> response) {
+                setMovieList(response.body().getMovieDataList());
             }
-            return movieDataList;
-        }
 
-        @Override
-        protected void onPostExecute(List<MovieData> movieDataList) {
-            mProgressbar.setVisibility(View.INVISIBLE);
-            if (movieDataList != null) {
-                showMovieData();
-                mMovieDataAdapter.setMovieData(movieDataList);
-            } else {
-                showErrorMessage();
+            @Override
+            public void onFailure(Call<MovieData.MovieApiResponse> call, Throwable t) {
             }
+        });
+    }
+
+    private void setMovieList(List<MovieData> movieDataList) {
+        if (movieDataList != null) {
+            showMovieData();
+            mMovieDataAdapter.setMovieData(movieDataList);
+        } else {
+            showErrorMessage();
         }
     }
 }
