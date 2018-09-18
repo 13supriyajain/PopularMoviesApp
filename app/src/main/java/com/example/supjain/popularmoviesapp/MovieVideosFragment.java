@@ -34,9 +34,11 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
         mMovieVideosDataList.add(new MovieVideosData("Z5ezsReZcxU", "No Good Deed"));
         mMovieVideosDataList.add(new MovieVideosData("2-5Wv9UGkN8", "Deadpool 2 | Official HD  Deadpool's \\\"Wet on Wet\\\" Teaser | 2018"));
 
-        MovieVideosAdapter movieVideosAdapter = new MovieVideosAdapter(this, mMovieVideosDataList);
+        MovieVideosAdapter movieVideosAdapter = new MovieVideosAdapter(this);
+        movieVideosAdapter.setMovieVideosData(mMovieVideosDataList);
+
         RecyclerView videosListView = rootView.findViewById(R.id.list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         videosListView.setLayoutManager(linearLayoutManager);
         videosListView.setAdapter(movieVideosAdapter);
         videosListView.setHasFixedSize(true);

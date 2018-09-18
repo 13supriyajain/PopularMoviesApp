@@ -22,9 +22,8 @@ public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosAdapter.
     private MovieVideosAdapterOnClickHandler mClickHandler;
     private Context context;
 
-    public MovieVideosAdapter(MovieVideosAdapterOnClickHandler clickHandler, List<MovieVideosData> dataList) {
+    public MovieVideosAdapter(MovieVideosAdapterOnClickHandler clickHandler) {
         this.mClickHandler = clickHandler;
-        this.mMovieVideosDataList = dataList;
     }
 
     @NonNull
@@ -48,6 +47,11 @@ public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosAdapter.
         if (mMovieVideosDataList == null || mMovieVideosDataList.isEmpty())
             return 0;
         return mMovieVideosDataList.size();
+    }
+
+    public void setMovieVideosData(List<MovieVideosData> movieVideosDataList) {
+        mMovieVideosDataList = movieVideosDataList;
+        notifyDataSetChanged();
     }
 
     public interface MovieVideosAdapterOnClickHandler {

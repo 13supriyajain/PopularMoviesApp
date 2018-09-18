@@ -36,9 +36,11 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
         mMovieReviewsDataList.add(new MovieReviewsData("TobyBenson", "An utterly hilarious movie, with hundreds of pop culture references",
                 "https://www.themoviedb.org/review/5b15d58fc3a368534f00fde5"));
 
-        MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this, mMovieReviewsDataList);
+        MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
+        movieReviewsAdapter.setMovieReviewsData(mMovieReviewsDataList);
+
         RecyclerView reviewsListView = rootView.findViewById(R.id.list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         reviewsListView.setLayoutManager(linearLayoutManager);
         reviewsListView.setAdapter(movieReviewsAdapter);
         reviewsListView.setHasFixedSize(true);

@@ -47,29 +47,6 @@ public class SimpleFragmentPagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
-//    @Override
-//    public Fragment getItem(int position) {
-//        if (position == 0) {
-//            Bundle bundle = new Bundle();
-//            bundle.putString(MOVIE_SUMMARY_TEXT, mMovieData.getMovieOverview());
-//            MovieSummaryFragment fragment = new MovieSummaryFragment();
-//            fragment.setArguments(bundle);
-//            return fragment;
-//        } else if (position == 1) {
-//            Bundle bundle = new Bundle();
-//            bundle.putString(MOVIE_ID, mMovieData.getMovieId());
-//            MovieVideosFragment fragment = new MovieVideosFragment();
-//            fragment.setArguments(bundle);
-//            return fragment;
-//        } else {
-//            Bundle bundle = new Bundle();
-//            bundle.putString(MOVIE_ID, mMovieData.getMovieId());
-//            MovieReviewsFragment fragment = new MovieReviewsFragment();
-//            fragment.setArguments(bundle);
-//            return fragment;
-//        }
-//    }
-
     // Generate title based on item position
     @Override
     public CharSequence getPageTitle(int position) {

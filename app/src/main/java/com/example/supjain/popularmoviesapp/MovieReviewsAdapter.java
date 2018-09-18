@@ -20,9 +20,8 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
     private MovieReviewsAdapterOnClickHandler mClickHandler;
     private Context context;
 
-    public MovieReviewsAdapter(MovieReviewsAdapterOnClickHandler clickHandler, List<MovieReviewsData> dataList) {
+    public MovieReviewsAdapter(MovieReviewsAdapterOnClickHandler clickHandler) {
         this.mClickHandler = clickHandler;
-        this.mMovieReviewsDataList = dataList;
     }
 
     @NonNull
@@ -49,6 +48,11 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
         if (mMovieReviewsDataList == null || mMovieReviewsDataList.isEmpty())
             return 0;
         return mMovieReviewsDataList.size();
+    }
+
+    public void setMovieReviewsData(List<MovieReviewsData> movieReviewsDataList) {
+        mMovieReviewsDataList = movieReviewsDataList;
+        notifyDataSetChanged();
     }
 
     public interface MovieReviewsAdapterOnClickHandler {
