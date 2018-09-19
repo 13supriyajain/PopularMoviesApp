@@ -17,5 +17,7 @@
     <string name="summary_title">Plot Synopsis</string>
     <string name="trailers_title">Trailers</string>
     <string name="reviews_title">Reviews</string>
+    <string name="favorite_option_title">Favorite</string>
+    <string name="sortby_my_favorites">SortBy: My Favorites</string>
 
 </resources>

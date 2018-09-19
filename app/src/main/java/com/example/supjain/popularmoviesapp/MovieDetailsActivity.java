@@ -1,27 +1,46 @@
 package com.example.supjain.popularmoviesapp;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
     public static final String MOVIE_OBJ_INTENT_KEY = "MovieDataObj";
+    private FavoriteMovieViewModel movieViewModel;
+    private List<MovieData> favoriteMovieList;
+    private MovieData currentMovieData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details);
 
+        movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
+        movieViewModel.getAllFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
+            @Override
+            public void onChanged(@Nullable final List<MovieData> movieDataList) {
+                setFavoriteMovieList(movieDataList);
+                invalidateOptionsMenu();
+            }
+        });
+
         final Bundle intentExtra = getIntent().getExtras();
         if (intentExtra == null) {
             return;
         }
-        MovieData currentMovieData = intentExtra.getParcelable(MOVIE_OBJ_INTENT_KEY);
+        currentMovieData = intentExtra.getParcelable(MOVIE_OBJ_INTENT_KEY);
 
         String movieTitle = currentMovieData.getMovieTitle();
         if (!TextUtils.isEmpty(movieTitle))
@@ -62,5 +81,60 @@ public class MovieDetailsActivity extends AppCompatActivity {
         //   3. Set the tab layout's tab names with the view pager's adapter's titles by calling onPageTitle()
         TabLayout tabLayout = findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.favorites, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.favorite_icon);
+        setFavoriteMenuItemIcon(item);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void setFavoriteMenuItemIcon(MenuItem item) {
+        if (isFavoriteMovie(currentMovieData))
+            item.setIcon(R.drawable.ic_mark_favorite);
+        else
+            item.setIcon(R.drawable.ic_favorite_border);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.favorite_icon:
+                if (isFavoriteMovie(currentMovieData)) {
+                    movieViewModel.deleteFavoriteMovie(currentMovieData);
+                } else {
+                    movieViewModel.insertFavoriteMovie(currentMovieData);
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setFavoriteMovieList(List<MovieData> list) {
+        favoriteMovieList = list;
+    }
+
+    private boolean isFavoriteMovie(MovieData currentMovieData) {
+        boolean isFavorite = false;
+        if (favoriteMovieList != null) {
+            for (MovieData favMovie : favoriteMovieList) {
+                String favMovieId = favMovie.getMovieId();
+                String currentMovieId = currentMovieData.getMovieId();
+                if (favMovieId.equals(currentMovieId)) {
+                    isFavorite = true;
+                    break;
+                }
+            }
+        }
+        return isFavorite;
     }
 }

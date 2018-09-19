@@ -23,7 +23,7 @@ import retrofit2.Retrofit;
 
 public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.MovieVideosAdapterOnClickHandler {
 
-    private RecyclerView videosListView;
+    private RecyclerView videosRecyclerView;
 
     public MovieVideosFragment() {
         // Required empty public constructor
@@ -33,7 +33,7 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.data_recycler_view, container, false);
-        videosListView = rootView.findViewById(R.id.list);
+        videosRecyclerView = rootView.findViewById(R.id.list);
         String movieId = getArguments().getString(SimpleFragmentPagerAdapter.MOVIE_ID);
         fetchAndSetVideoList(movieId);
         return rootView;
@@ -67,8 +67,8 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
         movieVideosAdapter.setMovieVideosData(mMovieVideosDataList);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        videosListView.setLayoutManager(linearLayoutManager);
-        videosListView.setAdapter(movieVideosAdapter);
-        videosListView.setHasFixedSize(true);
+        videosRecyclerView.setLayoutManager(linearLayoutManager);
+        videosRecyclerView.setAdapter(movieVideosAdapter);
+        videosRecyclerView.setHasFixedSize(true);
     }
 }

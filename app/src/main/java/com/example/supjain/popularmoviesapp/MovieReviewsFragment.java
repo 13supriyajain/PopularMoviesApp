@@ -23,7 +23,7 @@ import retrofit2.Retrofit;
 
 public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapter.MovieReviewsAdapterOnClickHandler {
 
-    private RecyclerView reviewsListView;
+    private RecyclerView reviewsRecyclerView;
 
     public MovieReviewsFragment() {
         // Required empty public constructor
@@ -33,7 +33,7 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.data_recycler_view, container, false);
-        reviewsListView = rootView.findViewById(R.id.list);
+        reviewsRecyclerView = rootView.findViewById(R.id.list);
 
         String movieId = getArguments().getString(SimpleFragmentPagerAdapter.MOVIE_ID);
         // make rest api call to get list of videos for the movie
@@ -70,8 +70,8 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
         movieReviewsAdapter.setMovieReviewsData(mMovieReviewsDataList);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        reviewsListView.setLayoutManager(linearLayoutManager);
-        reviewsListView.setAdapter(movieReviewsAdapter);
-        reviewsListView.setHasFixedSize(true);
+        reviewsRecyclerView.setLayoutManager(linearLayoutManager);
+        reviewsRecyclerView.setAdapter(movieReviewsAdapter);
+        reviewsRecyclerView.setHasFixedSize(true);
     }
 }
