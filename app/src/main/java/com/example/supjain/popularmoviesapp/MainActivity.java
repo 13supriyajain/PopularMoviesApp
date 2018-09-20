@@ -1,10 +1,13 @@
 package com.example.supjain.popularmoviesapp;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,21 +26,31 @@ import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements MovieDataAdapter.MovieAdapterOnClickHandler {
 
-    private static final int POPULAR_MOVIE_TYPE = 1;
-    private static final int TOP_RATED_MOVIE_TYPE = 2;
+    public static final int POPULAR_MOVIE_TYPE = 1;
+    public static final int TOP_RATED_MOVIE_TYPE = 2;
 
     private RecyclerView mRecyclerView;
     private MovieDataAdapter mMovieDataAdapter;
-    private TextView mNetworkErrorMessageDisplay;
+    private TextView mErrorMessageDisplay;
     private ProgressBar mProgressbar;
+    private List<MovieData> favoriteMovieList;
+    private FavoriteMovieViewModel movieViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = findViewById(R.id.movie_posters_recycle_view);
-        mNetworkErrorMessageDisplay = findViewById(R.id.no_connection_text_view);
+        movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
+        movieViewModel.getAllFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
+            @Override
+            public void onChanged(@Nullable final List<MovieData> movieDataList) {
+                setFavoriteMovieList(movieDataList);
+            }
+        });
+
+        mRecyclerView = findViewById(R.id.movie_data_recycle_view);
+        mErrorMessageDisplay = findViewById(R.id.error_text_view);
         mProgressbar = findViewById(R.id.progressbar);
         mMovieDataAdapter = new MovieDataAdapter(this);
 
@@ -50,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     }
 
     private void loadMovieData(int requestType) {
+        mProgressbar.setVisibility(View.VISIBLE);
         if (hasNetworkConnection()) {
             switch (requestType) {
                 case POPULAR_MOVIE_TYPE:
@@ -60,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
                     break;
             }
         } else {
-            showErrorMessage();
+            showErrorMessage(getResources().getString(R.string.no_connection_err_msg));
         }
     }
 
@@ -72,13 +86,14 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     }
 
     private void showMovieData() {
-        mNetworkErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
         mProgressbar.setVisibility(View.INVISIBLE);
     }
 
-    private void showErrorMessage() {
-        mNetworkErrorMessageDisplay.setVisibility(View.VISIBLE);
+    private void showErrorMessage(String errorMsg) {
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setText(errorMsg);
         mRecyclerView.setVisibility(View.INVISIBLE);
         mProgressbar.setVisibility(View.INVISIBLE);
     }
@@ -100,20 +115,22 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        mMovieDataAdapter.setMovieData(null);
         switch (id) {
             case R.id.sort_by_popular_option:
-                mMovieDataAdapter.setMovieData(null);
                 loadMovieData(POPULAR_MOVIE_TYPE);
                 break;
             case R.id.sort_by_rating_option:
-                mMovieDataAdapter.setMovieData(null);
                 loadMovieData(TOP_RATED_MOVIE_TYPE);
+                break;
+            case R.id.sort_by_favorites_option:
+                setMovieList(favoriteMovieList);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchMovieListFromServer(int requestType) {
+    public void fetchMovieListFromServer(int requestType) {
         String ApiKeyValue = MovieDataUtil.getApiKeyValue();
         Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
         MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
@@ -123,8 +140,6 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
             call = service.getPopularMovies(ApiKeyValue);
         else
             call = service.getTopRatedMovies(ApiKeyValue);
-
-        mProgressbar.setVisibility(View.VISIBLE);
 
         call.enqueue(new Callback<MovieData.MovieApiResponse>() {
             @Override
@@ -139,11 +154,15 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     }
 
     private void setMovieList(List<MovieData> movieDataList) {
-        if (movieDataList != null) {
+        if (movieDataList != null && movieDataList.size() > 0) {
             showMovieData();
             mMovieDataAdapter.setMovieData(movieDataList);
         } else {
-            showErrorMessage();
+            showErrorMessage(getResources().getString(R.string.no_data_err_msg));
         }
+    }
+
+    private void setFavoriteMovieList(List<MovieData> list) {
+        favoriteMovieList = list;
     }
 }

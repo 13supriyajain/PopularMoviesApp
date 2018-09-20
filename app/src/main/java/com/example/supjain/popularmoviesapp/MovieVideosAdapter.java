@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosAdapter.
     }
 
     public interface MovieVideosAdapterOnClickHandler {
-        void mClick(String movieVideosUrl);
+        void mClick(int viewId, String movieVideoUrl, String movieVideoTitle);
     }
 
     /**
@@ -70,21 +69,17 @@ public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosAdapter.
             super(view);
             videoNameTextView = view.findViewById(R.id.video_title_textview);
             videoShareBtn = view.findViewById(R.id.video_share_btn);
-
-            videoShareBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context, "Video Shared", Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            videoShareBtn.setOnClickListener(this);
             view.setOnClickListener(this);
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
-            mClickHandler.mClick(mMovieVideosDataList.get(clickedPosition).getVideoUrl());
+            int viewId = view.getId();
+            String videoUrl = mMovieVideosDataList.get(clickedPosition).getVideoUrl();
+            String videoTitle = mMovieVideosDataList.get(clickedPosition).getVideoName();
+            mClickHandler.mClick(viewId, videoUrl, videoTitle);
         }
     }
 }

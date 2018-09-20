@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapter.MovieReviewsAdapterViewHolder> {
 
+    private static final String COLON_SPACE = " :";
     private List<MovieReviewsData> mMovieReviewsDataList;
     private MovieReviewsAdapterOnClickHandler mClickHandler;
     private Context context;
@@ -37,7 +39,7 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
     public void onBindViewHolder(@NonNull MovieReviewsAdapterViewHolder holder, int position) {
         int viewPosition = holder.getAdapterPosition();
         String reviewerName = mMovieReviewsDataList.get(viewPosition).getReviewerName();
-        holder.reviewerNameTextView.setText(reviewerName);
+        holder.reviewerNameTextView.setText(reviewerName + COLON_SPACE);
 
         String reviewContent = mMovieReviewsDataList.get(viewPosition).getReviewText();
         holder.reviewContentTextView.setText(reviewContent);
@@ -66,11 +68,14 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
 
         public final TextView reviewerNameTextView;
         public final TextView reviewContentTextView;
+        public final ImageView reviewReadMoreBtn;
 
         public MovieReviewsAdapterViewHolder(View view) {
             super(view);
             reviewerNameTextView = view.findViewById(R.id.reviewer_name_textview);
             reviewContentTextView = view.findViewById(R.id.review_content_textview);
+            reviewReadMoreBtn = view.findViewById(R.id.review_read_more_btn);
+            reviewReadMoreBtn.setOnClickListener(this);
             view.setOnClickListener(this);
         }
 

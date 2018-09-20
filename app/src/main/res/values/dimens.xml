@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="layout_padding_small">8dp</dimen>
+    <dimen name="layout_padding_medium">16dp</dimen>
     <dimen name="image_view_width">150dp</dimen>
     <dimen name="image_view_height">200dp</dimen>
     <dimen name="poster_width">220dp</dimen>

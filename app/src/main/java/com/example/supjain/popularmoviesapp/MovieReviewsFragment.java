@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -23,7 +25,9 @@ import retrofit2.Retrofit;
 
 public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapter.MovieReviewsAdapterOnClickHandler {
 
-    private RecyclerView reviewsRecyclerView;
+    private RecyclerView mReviewsRecyclerView;
+    private TextView mErrorMessageDisplay;
+    private ProgressBar mProgressbar;
 
     public MovieReviewsFragment() {
         // Required empty public constructor
@@ -32,11 +36,15 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.data_recycler_view, container, false);
-        reviewsRecyclerView = rootView.findViewById(R.id.list);
+        View rootView = inflater.inflate(R.layout.activity_main, container, false);
+        mReviewsRecyclerView = rootView.findViewById(R.id.movie_data_recycle_view);
+        mErrorMessageDisplay = rootView.findViewById(R.id.error_text_view);
+        mProgressbar = rootView.findViewById(R.id.progressbar);
+        mProgressbar.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mReviewsRecyclerView.setVisibility(View.INVISIBLE);
 
         String movieId = getArguments().getString(SimpleFragmentPagerAdapter.MOVIE_ID);
-        // make rest api call to get list of videos for the movie
         fetchAndSetReviewList(movieId);
 
         return rootView;
@@ -65,13 +73,23 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
         });
     }
 
-    private void setReviewList(List<MovieReviewsData> mMovieReviewsDataList) {
-        MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
-        movieReviewsAdapter.setMovieReviewsData(mMovieReviewsDataList);
+    private void setReviewList(List<MovieReviewsData> movieReviewsDataList) {
+        mProgressbar.setVisibility(View.INVISIBLE);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        reviewsRecyclerView.setLayoutManager(linearLayoutManager);
-        reviewsRecyclerView.setAdapter(movieReviewsAdapter);
-        reviewsRecyclerView.setHasFixedSize(true);
+        if (movieReviewsDataList != null && movieReviewsDataList.size() > 0) {
+            mReviewsRecyclerView.setVisibility(View.VISIBLE);
+            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+            MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
+            movieReviewsAdapter.setMovieReviewsData(movieReviewsDataList);
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            mReviewsRecyclerView.setLayoutManager(linearLayoutManager);
+            mReviewsRecyclerView.setAdapter(movieReviewsAdapter);
+            mReviewsRecyclerView.setHasFixedSize(true);
+        } else {
+            mReviewsRecyclerView.setVisibility(View.INVISIBLE);
+            mErrorMessageDisplay.setVisibility(View.VISIBLE);
+            mErrorMessageDisplay.setText(getResources().getString(R.string.no_data_err_msg));
+        }
     }
 }
