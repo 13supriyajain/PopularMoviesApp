@@ -1,4 +1,4 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.supjain.popularmoviesapp.Data.MovieVideosData;
+import com.example.supjain.popularmoviesapp.R;
 
 import java.util.List;
 

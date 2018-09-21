@@ -4,6 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
+import com.example.supjain.popularmoviesapp.DB.FavoriteMovieRepository;
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+
 import java.util.List;
 
 public class FavoriteMovieViewModel extends AndroidViewModel {

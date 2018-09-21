@@ -1,8 +1,10 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.DB;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+
+import com.example.supjain.popularmoviesapp.Data.MovieData;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class FavoriteMovieRepository {
         mMovieDataList = mFavMovieDao.getAllFavoriteMovies();
     }
 
-    LiveData<List<MovieData>> getFavoriteMovies() {
+    public LiveData<List<MovieData>> getFavoriteMovies() {
         return mMovieDataList;
     }
 

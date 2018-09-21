@@ -17,6 +17,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.supjain.popularmoviesapp.Adapters.MovieDataAdapter;
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+import com.example.supjain.popularmoviesapp.Util.MovieDataUtil;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,20 +33,27 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
 
     public static final int POPULAR_MOVIE_TYPE = 1;
     public static final int TOP_RATED_MOVIE_TYPE = 2;
+    public static final int FAVORTIE_MOVIE_TYPE = 3;
+    private static final String LIST_KEY = "List";
 
     private RecyclerView mRecyclerView;
     private MovieDataAdapter mMovieDataAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mProgressbar;
+    private ArrayList<MovieData> mMovieList;
     private List<MovieData> favoriteMovieList;
-    private FavoriteMovieViewModel movieViewModel;
+
+    private int mRequestType = POPULAR_MOVIE_TYPE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
+        if (savedInstanceState != null)
+            mMovieList = savedInstanceState.getParcelableArrayList(LIST_KEY);
+
+        FavoriteMovieViewModel movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
         movieViewModel.getAllFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
             @Override
             public void onChanged(@Nullable final List<MovieData> movieDataList) {
@@ -59,22 +71,31 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
         mRecyclerView.setAdapter(mMovieDataAdapter);
         mRecyclerView.setHasFixedSize(true);
 
-        loadMovieData(POPULAR_MOVIE_TYPE);
+        if (mMovieList != null && mMovieList.size() > 0)
+            setMovieList(mMovieList);
+        else
+            loadMovieData();
     }
 
-    private void loadMovieData(int requestType) {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(LIST_KEY, mMovieList);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void loadMovieData() {
         mProgressbar.setVisibility(View.VISIBLE);
-        if (hasNetworkConnection()) {
-            switch (requestType) {
-                case POPULAR_MOVIE_TYPE:
-                    fetchMovieListFromServer(POPULAR_MOVIE_TYPE);
-                    break;
-                case TOP_RATED_MOVIE_TYPE:
-                    fetchMovieListFromServer(TOP_RATED_MOVIE_TYPE);
-                    break;
-            }
-        } else {
-            showErrorMessage(getResources().getString(R.string.no_connection_err_msg));
+
+        switch (mRequestType) {
+            case POPULAR_MOVIE_TYPE:
+                fetchMovieListFromServer(POPULAR_MOVIE_TYPE);
+                break;
+            case TOP_RATED_MOVIE_TYPE:
+                fetchMovieListFromServer(TOP_RATED_MOVIE_TYPE);
+                break;
+            case FAVORTIE_MOVIE_TYPE:
+                setMovieList(favoriteMovieList);
+                break;
         }
     }
 
@@ -114,48 +135,53 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         mMovieDataAdapter.setMovieData(null);
         switch (id) {
             case R.id.sort_by_popular_option:
-                loadMovieData(POPULAR_MOVIE_TYPE);
+                mRequestType = POPULAR_MOVIE_TYPE;
                 break;
             case R.id.sort_by_rating_option:
-                loadMovieData(TOP_RATED_MOVIE_TYPE);
+                mRequestType = TOP_RATED_MOVIE_TYPE;
                 break;
             case R.id.sort_by_favorites_option:
-                setMovieList(favoriteMovieList);
+                mRequestType = FAVORTIE_MOVIE_TYPE;
                 break;
         }
+        loadMovieData();
         return super.onOptionsItemSelected(item);
     }
 
-    public void fetchMovieListFromServer(int requestType) {
-        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
-        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
-        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
-        Call<MovieData.MovieApiResponse> call;
+    private void fetchMovieListFromServer(int requestType) {
+        if (hasNetworkConnection()) {
+            String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+            Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
+            MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+            Call<MovieData.MovieApiResponse> call;
 
-        if (requestType == POPULAR_MOVIE_TYPE)
-            call = service.getPopularMovies(ApiKeyValue);
-        else
-            call = service.getTopRatedMovies(ApiKeyValue);
+            if (requestType == POPULAR_MOVIE_TYPE)
+                call = service.getPopularMovies(ApiKeyValue);
+            else
+                call = service.getTopRatedMovies(ApiKeyValue);
 
-        call.enqueue(new Callback<MovieData.MovieApiResponse>() {
-            @Override
-            public void onResponse(Call<MovieData.MovieApiResponse> call, Response<MovieData.MovieApiResponse> response) {
-                setMovieList(response.body().getMovieDataList());
-            }
+            call.enqueue(new Callback<MovieData.MovieApiResponse>() {
+                @Override
+                public void onResponse(Call<MovieData.MovieApiResponse> call, Response<MovieData.MovieApiResponse> response) {
+                    setMovieList(response.body().getMovieDataList());
+                }
 
-            @Override
-            public void onFailure(Call<MovieData.MovieApiResponse> call, Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(Call<MovieData.MovieApiResponse> call, Throwable t) {
+                }
+            });
+        } else {
+            showErrorMessage(getResources().getString(R.string.no_connection_err_msg));
+        }
     }
 
     private void setMovieList(List<MovieData> movieDataList) {
         if (movieDataList != null && movieDataList.size() > 0) {
             showMovieData();
+            mMovieList = (ArrayList<MovieData>) movieDataList;
             mMovieDataAdapter.setMovieData(movieDataList);
         } else {
             showErrorMessage(getResources().getString(R.string.no_data_err_msg));

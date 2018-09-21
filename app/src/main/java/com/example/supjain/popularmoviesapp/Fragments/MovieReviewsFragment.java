@@ -1,4 +1,4 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Fragments;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.supjain.popularmoviesapp.Adapters.MovieReviewsAdapter;
+import com.example.supjain.popularmoviesapp.Adapters.SimpleFragmentPagerAdapter;
+import com.example.supjain.popularmoviesapp.Data.MovieReviewsData;
+import com.example.supjain.popularmoviesapp.R;
+import com.example.supjain.popularmoviesapp.Util.MovieDataUtil;
 
 import java.util.List;
 
@@ -40,6 +46,7 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
         mReviewsRecyclerView = rootView.findViewById(R.id.movie_data_recycle_view);
         mErrorMessageDisplay = rootView.findViewById(R.id.error_text_view);
         mProgressbar = rootView.findViewById(R.id.progressbar);
+
         mProgressbar.setVisibility(View.VISIBLE);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mReviewsRecyclerView.setVisibility(View.INVISIBLE);
@@ -79,6 +86,7 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
         if (movieReviewsDataList != null && movieReviewsDataList.size() > 0) {
             mReviewsRecyclerView.setVisibility(View.VISIBLE);
             mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+
             MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
             movieReviewsAdapter.setMovieReviewsData(movieReviewsDataList);
 

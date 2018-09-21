@@ -1,10 +1,16 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Adapters;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+import com.example.supjain.popularmoviesapp.Fragments.MovieReviewsFragment;
+import com.example.supjain.popularmoviesapp.Fragments.MovieSummaryFragment;
+import com.example.supjain.popularmoviesapp.Fragments.MovieVideosFragment;
+import com.example.supjain.popularmoviesapp.R;
 
 /**
  * This custom FragmentPagerAdapter class is for returning custom Fragment class objects and page titles

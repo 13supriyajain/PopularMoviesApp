@@ -1,9 +1,13 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Util;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
+import com.example.supjain.popularmoviesapp.BuildConfig;
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+import com.example.supjain.popularmoviesapp.Data.MovieReviewsData;
+import com.example.supjain.popularmoviesapp.Data.MovieVideosData;
 import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
@@ -21,8 +25,6 @@ public class MovieDataUtil {
     private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/";
     private static final String DOMAIN_URL = "https://api.themoviedb.org/3/movie/";
     private static final String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY_VALUE;
-    private static final String VIDEOS_QUERY = "/videos";
-    private static final String REVIEWS_QUERY = "/reviews";
 
     private static Retrofit retrofitInstance;
 

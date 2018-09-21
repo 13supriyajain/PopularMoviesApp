@@ -1,4 +1,4 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -29,33 +29,26 @@ public class MovieData implements Parcelable {
             return new MovieData[size];
         }
     };
-
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
     @SerializedName("id")
     private String mMovieId;
-
     @ColumnInfo(name = "title")
     @SerializedName("original_title")
     private String mMovieTitle;
-
     @ColumnInfo(name = "poster_path")
     @SerializedName("poster_path")
     private String mMoviePosterUrl;
-
     @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     private String mMovieReleaseDate;
-
     @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     private String mMovieRating;
-
     @ColumnInfo(name = "vote_count")
     @SerializedName("vote_count")
     private String mMovieVoteCount;
-
     @ColumnInfo(name = "overview")
     @SerializedName("overview")
     private String mMovieOverview;

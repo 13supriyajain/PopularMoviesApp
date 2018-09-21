@@ -1,4 +1,4 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+import com.example.supjain.popularmoviesapp.R;
+import com.example.supjain.popularmoviesapp.Util.MovieDataUtil;
 
 import java.util.List;
 
@@ -63,7 +67,7 @@ public class MovieDataAdapter extends RecyclerView.Adapter<MovieDataAdapter.Movi
 
         public MovieDataAdapterViewHolder(View view) {
             super(view);
-            mMoviePosterImageView = (ImageView) view.findViewById(R.id.grid_poster_image_view);
+            mMoviePosterImageView = view.findViewById(R.id.grid_poster_image_view);
             view.setOnClickListener(this);
         }
 

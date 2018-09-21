@@ -1,4 +1,4 @@
-package com.example.supjain.popularmoviesapp;
+package com.example.supjain.popularmoviesapp.Data;
 
 import com.google.gson.annotations.SerializedName;
 

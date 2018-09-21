@@ -13,6 +13,10 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.supjain.popularmoviesapp.Adapters.SimpleFragmentPagerAdapter;
+import com.example.supjain.popularmoviesapp.Data.MovieData;
+import com.example.supjain.popularmoviesapp.Util.MovieDataUtil;
+
 import java.util.List;
 
 public class MovieDetailsActivity extends AppCompatActivity {
