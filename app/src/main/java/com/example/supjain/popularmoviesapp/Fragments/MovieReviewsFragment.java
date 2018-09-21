@@ -63,29 +63,30 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
     }
 
     private void fetchAndSetReviewList(String movieId) {
-        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
-        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
-        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+        if (MovieDataUtil.hasNetworkConnection(getContext())) {
+            String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+            Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
+            MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
 
-        Call<MovieReviewsData.ReviewsApiResponse> call = service.getMovieReviews(movieId, ApiKeyValue);
-        call.enqueue(new Callback<MovieReviewsData.ReviewsApiResponse>() {
-            @Override
-            public void onResponse(Call<MovieReviewsData.ReviewsApiResponse> call, Response<MovieReviewsData.ReviewsApiResponse> response) {
-                setReviewList(response.body().getMovieReviewsDataList());
-            }
+            Call<MovieReviewsData.ReviewsApiResponse> call = service.getMovieReviews(movieId, ApiKeyValue);
+            call.enqueue(new Callback<MovieReviewsData.ReviewsApiResponse>() {
+                @Override
+                public void onResponse(Call<MovieReviewsData.ReviewsApiResponse> call, Response<MovieReviewsData.ReviewsApiResponse> response) {
+                    setReviewList(response.body().getMovieReviewsDataList());
+                }
 
-            @Override
-            public void onFailure(Call<MovieReviewsData.ReviewsApiResponse> call, Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(Call<MovieReviewsData.ReviewsApiResponse> call, Throwable t) {
+                }
+            });
+        } else {
+            showErrorMessage(getResources().getString(R.string.no_connection_err_msg));
+        }
     }
 
     private void setReviewList(List<MovieReviewsData> movieReviewsDataList) {
-        mProgressbar.setVisibility(View.INVISIBLE);
-
         if (movieReviewsDataList != null && movieReviewsDataList.size() > 0) {
-            mReviewsRecyclerView.setVisibility(View.VISIBLE);
-            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+            showMovieData();
 
             MovieReviewsAdapter movieReviewsAdapter = new MovieReviewsAdapter(this);
             movieReviewsAdapter.setMovieReviewsData(movieReviewsDataList);
@@ -95,9 +96,20 @@ public class MovieReviewsFragment extends Fragment implements MovieReviewsAdapte
             mReviewsRecyclerView.setAdapter(movieReviewsAdapter);
             mReviewsRecyclerView.setHasFixedSize(true);
         } else {
-            mReviewsRecyclerView.setVisibility(View.INVISIBLE);
-            mErrorMessageDisplay.setVisibility(View.VISIBLE);
-            mErrorMessageDisplay.setText(getResources().getString(R.string.no_data_err_msg));
+            showErrorMessage(getResources().getString(R.string.no_data_err_msg));
         }
+    }
+
+    private void showMovieData() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mReviewsRecyclerView.setVisibility(View.VISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
+    }
+
+    private void showErrorMessage(String errorMsg) {
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setText(errorMsg);
+        mReviewsRecyclerView.setVisibility(View.INVISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
     }
 }

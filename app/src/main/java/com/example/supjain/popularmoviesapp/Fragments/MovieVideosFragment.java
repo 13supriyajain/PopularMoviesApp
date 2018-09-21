@@ -72,29 +72,30 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
     }
 
     private void fetchAndSetVideoList(String movieId) {
-        String ApiKeyValue = MovieDataUtil.getApiKeyValue();
-        Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
-        MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
+        if (MovieDataUtil.hasNetworkConnection(getContext())) {
+            String ApiKeyValue = MovieDataUtil.getApiKeyValue();
+            Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
+            MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);
 
-        Call<MovieVideosData.TrailersApiResponse> call = service.getMovieVideos(movieId, ApiKeyValue);
-        call.enqueue(new Callback<MovieVideosData.TrailersApiResponse>() {
-            @Override
-            public void onResponse(Call<MovieVideosData.TrailersApiResponse> call, Response<MovieVideosData.TrailersApiResponse> response) {
-                setVideosList(response.body().getMovieVideosDataList());
-            }
+            Call<MovieVideosData.TrailersApiResponse> call = service.getMovieVideos(movieId, ApiKeyValue);
+            call.enqueue(new Callback<MovieVideosData.TrailersApiResponse>() {
+                @Override
+                public void onResponse(Call<MovieVideosData.TrailersApiResponse> call, Response<MovieVideosData.TrailersApiResponse> response) {
+                    setVideosList(response.body().getMovieVideosDataList());
+                }
 
-            @Override
-            public void onFailure(Call<MovieVideosData.TrailersApiResponse> call, Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(Call<MovieVideosData.TrailersApiResponse> call, Throwable t) {
+                }
+            });
+        } else {
+            showErrorMessage(getResources().getString(R.string.no_connection_err_msg));
+        }
     }
 
     private void setVideosList(List<MovieVideosData> movieVideosDataList) {
-        mProgressbar.setVisibility(View.INVISIBLE);
-
         if (movieVideosDataList != null && movieVideosDataList.size() > 0) {
-            mVideosRecyclerView.setVisibility(View.VISIBLE);
-            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+            showMovieData();
 
             MovieVideosAdapter movieVideosAdapter = new MovieVideosAdapter(this);
             movieVideosAdapter.setMovieVideosData(movieVideosDataList);
@@ -104,9 +105,7 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
             mVideosRecyclerView.setAdapter(movieVideosAdapter);
             mVideosRecyclerView.setHasFixedSize(true);
         } else {
-            mVideosRecyclerView.setVisibility(View.INVISIBLE);
-            mErrorMessageDisplay.setVisibility(View.VISIBLE);
-            mErrorMessageDisplay.setText(getResources().getString(R.string.no_data_err_msg));
+            showErrorMessage(getResources().getString(R.string.no_data_err_msg));
         }
     }
 
@@ -134,5 +133,18 @@ public class MovieVideosFragment extends Fragment implements MovieVideosAdapter.
                 startActivity(intent);
             }
         }
+    }
+
+    private void showMovieData() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mVideosRecyclerView.setVisibility(View.VISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
+    }
+
+    private void showErrorMessage(String errorMsg) {
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setText(errorMsg);
+        mVideosRecyclerView.setVisibility(View.INVISIBLE);
+        mProgressbar.setVisibility(View.INVISIBLE);
     }
 }

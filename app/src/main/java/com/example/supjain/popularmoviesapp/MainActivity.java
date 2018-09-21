@@ -2,10 +2,7 @@ package com.example.supjain.popularmoviesapp;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -99,13 +96,6 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
         }
     }
 
-    private boolean hasNetworkConnection() {
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
     private void showMovieData() {
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
@@ -152,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     }
 
     private void fetchMovieListFromServer(int requestType) {
-        if (hasNetworkConnection()) {
+        if (MovieDataUtil.hasNetworkConnection(this)) {
             String ApiKeyValue = MovieDataUtil.getApiKeyValue();
             Retrofit retrofit = MovieDataUtil.getRetrofitInstance();
             MovieDataUtil.MovieDataFetchService service = retrofit.create(MovieDataUtil.MovieDataFetchService.class);

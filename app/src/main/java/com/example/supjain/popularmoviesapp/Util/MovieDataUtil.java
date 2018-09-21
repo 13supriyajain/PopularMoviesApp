@@ -1,6 +1,8 @@
 package com.example.supjain.popularmoviesapp.Util;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
@@ -48,6 +50,13 @@ public class MovieDataUtil {
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int noOfColumns = (int) (dpWidth / 180);
         return noOfColumns;
+    }
+
+    public static boolean hasNetworkConnection(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public static String getApiKeyValue() {
