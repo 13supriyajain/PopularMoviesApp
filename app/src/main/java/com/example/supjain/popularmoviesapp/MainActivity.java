@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
     public static final int FAVORTIE_MOVIE_TYPE = 3;
     private static final String LIST_KEY = "List";
 
+    private FavoriteMovieViewModel movieViewModel;
     private RecyclerView mRecyclerView;
     private MovieDataAdapter mMovieDataAdapter;
     private TextView mErrorMessageDisplay;
@@ -50,13 +51,8 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
         if (savedInstanceState != null)
             mMovieList = savedInstanceState.getParcelableArrayList(LIST_KEY);
 
-        FavoriteMovieViewModel movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
-        movieViewModel.getAllFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
-            @Override
-            public void onChanged(@Nullable final List<MovieData> movieDataList) {
-                setFavoriteMovieList(movieDataList);
-            }
-        });
+        movieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
+        fetchFavoriteMovieList();
 
         mRecyclerView = findViewById(R.id.movie_data_recycle_view);
         mErrorMessageDisplay = findViewById(R.id.error_text_view);
@@ -180,5 +176,16 @@ public class MainActivity extends AppCompatActivity implements MovieDataAdapter.
 
     private void setFavoriteMovieList(List<MovieData> list) {
         favoriteMovieList = list;
+    }
+
+    private void fetchFavoriteMovieList() {
+        movieViewModel.getAllFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
+            @Override
+            public void onChanged(@Nullable final List<MovieData> movieDataList) {
+                setFavoriteMovieList(movieDataList);
+                if (mRequestType == FAVORTIE_MOVIE_TYPE)
+                    setMovieList(favoriteMovieList);
+            }
+        });
     }
 }
